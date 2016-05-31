@@ -1470,18 +1470,43 @@ $prob_alive_deprivation = 1; $final_deprivation = 0;
 $prob_alive_all = 1; $final_all = 0;
 
 
+// start Kasim testing
+	$_SESSION['baselineTesting']  = $baseline;
+// end Kasim testing
+
 while($i<=120) {
+	
+	// start MPoRT
+		if ($i > 99) $iMPoRT = 99;
+		else $iMPoRT = $i;
+	// end MPoRT
+	
 	
 	if ($sex == '1') {
 		if ($i > 65) {$age2 = $i - 65;}
 		else $age2=0;
 		
+		// start MPoRT - adjust baseline (instead of looking using formula)
+			$adjbaseline = 0.000000000000021551081381583600*pow($iMPoRT,6) - 0.000000000008486447609888860000*pow($iMPoRT,5) + 0.000000001364399999667450000000*pow($iMPoRT,4) - 0.000000114481138673466000000000*pow($iMPoRT,3) + 0.000005288182339610380000000000*pow($iMPoRT,2) - 0.000127814512267739000000000000*$iMPoRT + 0.001304104388221730000000000000;
+			
+			$baseline=$adjbaseline;
+		// end MPoRT
 		
 	}
 	else if ($sex == '2') {
 		if ($i > 80) {$age2 = $i - 80;}
 		else $age2=0;
+		
+		// start MPoRT - adjust baseline (instead of looking using formula)
+			$adjbaseline = 0.000000000000298122211138552000*pow($iMPoRT,5) + 0.000000000094450531059653000000*pow($iMPoRT,4) - 0.000000011553325235826000000000*pow($iMPoRT,3) + 0.000000688676124502489000000000*pow($iMPoRT,2) - 0.000020192895421023900000000000*$iMPoRT + 0.000256321798081950000000000000;
+			
+			$baseline=$adjbaseline;
+		// end MPoRT
 	}
+	
+	// start Kasim testing
+		$_SESSION['adjbaselineTesting']  = $baseline;
+	// end Kasim testing
 	
 	//Helica-H
 	// initialize
@@ -2095,8 +2120,8 @@ $_SESSION['stroke_risk']=$stroke_risk;
 header( "Location: /life/results.php?le=$final_le&hosp=$final_hosp&lts=$final_lts&leage=$final_leage&beddays=$final_beddays&largestrisk=$final_largestrisk&yldtsmoke=$final_yldt_smoke&yldtalc=$final_yldt_alcohol&yldtdiet=$final_yldt_diet&yldtpa=$final_yldt_PA&eventyear=$final_eventyear&eventprob=$final_eventprob&eventtitle=$final_eventtitle" ) ;
 */
 
-//TODO yulric uncomment
-header( "Location: /life/results.php" ) ;
+//TODO kasim change to results.php uncomment
+header( "Location: /life/resultsmport.php" ) ;
 
 } // end function calculate
 
@@ -2785,14 +2810,24 @@ else {
 		else if ($alc1 == 3) $stroke_score = $stroke_score + 1; //Non Drinker
 		
 		//diet
+		/*
 		if (7*($diet5 + $diet6) < 7) $stroke_score = $stroke_score + 2; //Poor Diet
 		else if  (7*($diet5 + $diet6) >= 7 && 7*($diet5 + $diet6) < 14) $stroke_score = $stroke_score + 1; //Fair  Diet:
 		else if (7*($diet5 + $diet6) >= 14) $stroke_score = $stroke_score +	0; //Adequate diet:
+		*/
+		if (($diet5 + $diet6) < 7) $stroke_score = $stroke_score + 2; //Poor Diet
+		else if (($diet5 + $diet6) >= 7 && ($diet5 + $diet6) < 14) $stroke_score = $stroke_score + 1; //Fair  Diet:
+		else if (($diet5 + $diet6) >= 14) $stroke_score = $stroke_score +	0; //Adequate diet:
 		
 		// PA
+		/*
 		if ($pa1 < 1.5)  $stroke_score = $stroke_score + 2;
 		else if ($pa1 >= 1.5 && $pa1 < 3)  $stroke_score = $stroke_score + 1;
 		else if ($pa1 >= 3) $stroke_score = $stroke_score + 0;
+		*/
+		if ($PA < 1.5)  $stroke_score = $stroke_score + 2;
+		else if ($PA >= 1.5 && $PA < 3)  $stroke_score = $stroke_score + 1;
+		else if ($PA >= 3) $stroke_score = $stroke_score + 0;
 
 		//stress
 		if ($str1 == 2) $stroke_score = $stroke_score + 1;

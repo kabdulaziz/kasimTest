@@ -565,8 +565,18 @@ else { // not a postback
 		<br>
 		<!-- Life Expectancy section -->
 		
+		
 		<?php echo '<html><div id="ResultHeader">My Results</div></html>' ?>
 		<div id="section1" class="sectionContainer" style="border: solid 1px #c0c0c0; margin-top: 0;">
+		
+		<!-- Kasim testing -->
+		<font color=red>
+			<h1><?php echo "FOR TESTING: prob alive: " . $_SESSION['probdeath']; ?></h1>
+			<h1><?php echo "FOR TESTING: baseline: " . $_SESSION['baselineTesting']; ?></h1>
+			<h1><?php echo "FOR TESTING: adjusted baseline: " . $_SESSION['adjbaselineTesting']; ?></h1>
+		</font>
+		<!-- end Kasim testing -->
+		
 		<h1><?php if (($_SESSION['le'])=='1') echo 'Life Expectancy '?><font class="emphase" size='6em'> <?php if(($_SESSION['le'])=='1') echo $_SESSION['leage']?> </font> <?php if (($_SESSION['le'])=='1') echo 'years' ?>
 		<span class="no-print"><?php if (($_SESSION['le'])=='1') echo '<img 
         type="image" class= "one" src="/common/images/info.png" 
@@ -925,7 +935,7 @@ else { // not a postback
 	<!-- Recalculate and Privacy Button -->
 	<div class="no-print">
 		<br><br><font size='3em'><dfn>See how changes to your answers affect your results:</dfn></font><br><br>
-		<a href="/life" onclick="setCounter(sessionID,'recalculate');" class="button orange"><b>RECALCULATE</b></a> 
+		<a href="/life/indexmport.php" onclick="setCounter(sessionID,'recalculate');" class="button orange"><b>RECALCULATE</b></a> 
 		<!-- <a href="#" onclick="setCounter(sessionID,'print1');window.print();return false;" class="no-print button orange"><b>PRINT</b></a> -->
 		<br><br><br>
 		<center><h2><a href="/common/privacy.php"><b>PRIVACY</b></a> </h2></center>
