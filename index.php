@@ -97,9 +97,13 @@ $eventdate='';
 $calc_le='1';
 $calc_beddays='';
 $calc_fhc = '';
+$calc_str = '';
 
 if($_GET["fhc"] == "1") 
 	$calc_fhc = '1';
+
+if($_GET["str"] == "1") 
+	$calc_str = '1';
 
 if (isset ( $_GET ["le"] ) && isset ( $_GET ["hosp"] ) ) {
 	if ($_GET ["le"] == "1") $calc_le='1';
@@ -186,6 +190,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST")
 	$calc_le = $_POST["calc_le"];
 	$calc_beddays = $_POST["calc_beddays"];
 	$calc_fhc = $_POST['calc_fhc'];
+	$calc_str = $_POST['calc_str'];
 
 	$household_income = $_POST['household-income'];
 	$home_ownership = $_POST['home-ownership'];
@@ -272,6 +277,9 @@ else { // not a postback
 
 					if(!$_GET["fhc"])
 						$calc_fhc = $row->calc_fhc;
+					
+					if(!$_GET["str"])
+						$calc_str = $row->calc_str;
 
 					$household_income = $row->household_income;
 					$home_ownership = $row->home_ownership;
@@ -314,6 +322,11 @@ Introduction text to go here.
 		<input type="checkbox" name="calc_fhc" id="calc-3" value="1" <?php echo ($calc_fhc == '1') ? 'checked' : '' ?> />
 		<label for="calc-3" valign=center>Future Health Care Costs</label>
 		<!-- Checkbox for the future hospital costs calculation -->
+		
+		<!-- Checkbox for the SPoRT calculation -->
+		<input type="checkbox" name="calc_str" id="calc-2" value="1" <?php echo ($calc_str == '1') ? 'checked' : '' ?> />
+		<label for="calc-2" valign=center>Stroke Risk</label>
+		<!-- Checkbox for the SPoRT calculation -->
 
 			<br />
 
@@ -983,7 +996,7 @@ For inputs need the following since considering cases when not answered (Non-res
 9. Diseases: 4 (one for each disease)
 10. Event_year
 ******************************************************************************/
-function calculate($sex, $age, $currentLightSmk, $currentHeavySmk, $formerLightSmk, $formerHeavySmk, $formerLightSmkYearsSinceQuit, $formerHeavySmkYearsSinceQuit, $alcH, /*$alcR, $alcL, $alcN,*/ $alcM, $diet, $PA, $imm, $yearsSinceImmigrated, $eduNoHSGrad, $eduHSGrad, $hDisease, $stroke, $hypertension, $cancer, $diabetes, $event_year, $bmiHigh, $bmiAbove35, $stressHigh, $fragile, $restricted, $depMod, $depHigh, $LHINInjuryRate, $calc_le, $calc_beddays, $eventtitle, $PM25MeanCenteredExposure, $O3MeanCenteredExposure, $NO2MeanCenteredExposure, $PM25FifthPerCenteredExposure, $O3FifthPerCenteredExposure, $NO2FifthPerCenteredExposure, $stroke_score, $stroke_lkupValue) {
+function calculate($sex, $age, $currentLightSmk, $currentHeavySmk, $formerLightSmk, $formerHeavySmk, $formerLightSmkYearsSinceQuit, $formerHeavySmkYearsSinceQuit, $alcH, /*$alcR, $alcL, $alcN,*/ $alcM, $diet, $PA, $imm, $yearsSinceImmigrated, $eduNoHSGrad, $eduHSGrad, $hDisease, $stroke, $hypertension, $cancer, $diabetes, $event_year, $bmiHigh, $bmiAbove35, $stressHigh, $fragile, $restricted, $depMod, $depHigh, $LHINInjuryRate, $calc_le, $calc_str, $calc_beddays, $eventtitle, $PM25MeanCenteredExposure, $O3MeanCenteredExposure, $NO2MeanCenteredExposure, $PM25FifthPerCenteredExposure, $O3FifthPerCenteredExposure, $NO2FifthPerCenteredExposure, $stroke_score, $stroke_lkupValue) {
 
 //male model
 if ($sex == 1) {
@@ -1470,43 +1483,18 @@ $prob_alive_deprivation = 1; $final_deprivation = 0;
 $prob_alive_all = 1; $final_all = 0;
 
 
-// start Kasim testing
-	$_SESSION['baselineTesting']  = $baseline;
-// end Kasim testing
-
 while($i<=120) {
-	
-	// start MPoRT
-		if ($i > 99) $iMPoRT = 99;
-		else $iMPoRT = $i;
-	// end MPoRT
-	
 	
 	if ($sex == '1') {
 		if ($i > 65) {$age2 = $i - 65;}
 		else $age2=0;
 		
-		// start MPoRT - adjust baseline (instead of looking using formula)
-			$adjbaseline = 0.000000000000021551081381583600*pow($iMPoRT,6) - 0.000000000008486447609888860000*pow($iMPoRT,5) + 0.000000001364399999667450000000*pow($iMPoRT,4) - 0.000000114481138673466000000000*pow($iMPoRT,3) + 0.000005288182339610380000000000*pow($iMPoRT,2) - 0.000127814512267739000000000000*$iMPoRT + 0.001304104388221730000000000000;
-			
-			$baseline=$adjbaseline;
-		// end MPoRT
 		
 	}
 	else if ($sex == '2') {
 		if ($i > 80) {$age2 = $i - 80;}
 		else $age2=0;
-		
-		// start MPoRT - adjust baseline (instead of looking using formula)
-			$adjbaseline = 0.000000000000298122211138552000*pow($iMPoRT,5) + 0.000000000094450531059653000000*pow($iMPoRT,4) - 0.000000011553325235826000000000*pow($iMPoRT,3) + 0.000000688676124502489000000000*pow($iMPoRT,2) - 0.000020192895421023900000000000*$iMPoRT + 0.000256321798081950000000000000;
-			
-			$baseline=$adjbaseline;
-		// end MPoRT
 	}
-	
-	// start Kasim testing
-		$_SESSION['adjbaselineTesting']  = $baseline;
-	// end Kasim testing
 	
 	//Helica-H
 	// initialize
@@ -2022,6 +2010,7 @@ if ( ($final_smoke-$final) < 0.1 && ($final_alcohol-$final) < 0.1 && ($final_die
 
 
 $final_le=$calc_le;
+$final_str=$calc_str;
 $final_hosp=$calc_beddays;
 $final_leage=round($final,1);
 $final_beddays=round($finalBedDays,1);
@@ -2057,6 +2046,7 @@ if ($event_year !='') $final_lts=1;
 else $final_lts=0;
 
 $_SESSION['le']=$final_le;
+$_SESSION['str']=$final_str;
 $_SESSION['hosp']=$final_hosp;
 $_SESSION['lts']=$final_lts;
 $_SESSION['leage']=$final_leage;
@@ -2120,8 +2110,8 @@ $_SESSION['stroke_risk']=$stroke_risk;
 header( "Location: /life/results.php?le=$final_le&hosp=$final_hosp&lts=$final_lts&leage=$final_leage&beddays=$final_beddays&largestrisk=$final_largestrisk&yldtsmoke=$final_yldt_smoke&yldtalc=$final_yldt_alcohol&yldtdiet=$final_yldt_diet&yldtpa=$final_yldt_PA&eventyear=$final_eventyear&eventprob=$final_eventprob&eventtitle=$final_eventtitle" ) ;
 */
 
-//TODO kasim change to results.php uncomment
-header( "Location: /life/resultsmport.php" ) ;
+//TODO yulric uncomment
+header( "Location: /life/results.php" ) ;
 
 } // end function calculate
 
@@ -2828,7 +2818,7 @@ else {
 		if ($PA < 1.5)  $stroke_score = $stroke_score + 2;
 		else if ($PA >= 1.5 && $PA < 3)  $stroke_score = $stroke_score + 1;
 		else if ($PA >= 3) $stroke_score = $stroke_score + 0;
-
+		
 		//stress
 		if ($str1 == 2) $stroke_score = $stroke_score + 1;
 		else if ($str1 == 1) $stroke_score = $stroke_score + 0;
@@ -2909,7 +2899,7 @@ else {
 	calculate($sex_s, $age_s, $currentLightSmk, $currentHeavySmk, $formerLightSmk, $formerHeavySmk, $formerLightSmkYearsSinceQuit, $formerHeavySmkYearsSinceQuit, $alcH, $alcR, $alcL, $alcN, $diet, $PA, $imm, $yearsSinceImmigrated, $eduNoHSGrad, $eduHSGrad, $hDisease, $stroke, $cancer, $diabetes, $eventdate, $bmiHigh, $stressHigh, $fragile, $restricted, $depMod, $depHigh, $LHINInjuryRate, $calc_le, $calc_beddays,  $eventtitle);
 	*/
 	
-	calculate($sex_s, $age_s, $currentLightSmk, $currentHeavySmk, $formerLightSmk, $formerHeavySmk, $formerLightSmkYearsSinceQuit, $formerHeavySmkYearsSinceQuit, $alcH, /*$alcR, $alcL, $alcN,*/ $alcM, $diet, $PA, $imm, $yearsSinceImmigrated, $eduNoHSGrad, $eduHSGrad, $hDisease, $stroke, $hypertension, $cancer, $diabetes, $eventdate /*$event_year*/, $bmiHigh, $bmiAbove35, $stressHigh, $fragile, $restricted, $depMod, $depHigh, $LHINInjuryRate, $calc_le, $calc_beddays, $eventtitle, $PM25MeanCenteredExposure, $O3MeanCenteredExposure, $NO2MeanCenteredExposure, $PM25FifthPerCenteredExposure, $O3FifthPerCenteredExposure, $NO2FifthPerCenteredExposure, $stroke_score, $stroke_lkupValue);
+	calculate($sex_s, $age_s, $currentLightSmk, $currentHeavySmk, $formerLightSmk, $formerHeavySmk, $formerLightSmkYearsSinceQuit, $formerHeavySmkYearsSinceQuit, $alcH, /*$alcR, $alcL, $alcN,*/ $alcM, $diet, $PA, $imm, $yearsSinceImmigrated, $eduNoHSGrad, $eduHSGrad, $hDisease, $stroke, $hypertension, $cancer, $diabetes, $eventdate /*$event_year*/, $bmiHigh, $bmiAbove35, $stressHigh, $fragile, $restricted, $depMod, $depHigh, $LHINInjuryRate, $calc_le, $calc_str, $calc_beddays, $eventtitle, $PM25MeanCenteredExposure, $O3MeanCenteredExposure, $NO2MeanCenteredExposure, $PM25FifthPerCenteredExposure, $O3FifthPerCenteredExposure, $NO2FifthPerCenteredExposure, $stroke_score, $stroke_lkupValue);
 		
 	// insert user data into database
 	// record info
@@ -2950,10 +2940,10 @@ else {
 	//if ($connect && $db_selected) {
 	$sessionID = $_SESSION['sessionID'];
 		
-			$query4insert= "INSERT INTO helica_h2 (uniqueID, sessionID, age, sex, height1, height2, height3, weight1, weight2, smk1, smk2, alc1, alc2, alc4, diet1, diet2, diet3, diet4, diet5, diet6, pa1, pa2, pa3, str1, country1, imm1, imm2, ses1, education1, diabetes1, hDisease1, stroke1, htension1, noDisease1, immobile1, immobile2, depindex, lhin, prov, eventtitle, eventdate, calc_le, calc_beddays, household_income, home_ownership, marital_status, cancer, dementia, calc_fhc)
+			$query4insert= "INSERT INTO helica_h2 (uniqueID, sessionID, age, sex, height1, height2, height3, weight1, weight2, smk1, smk2, alc1, alc2, alc4, diet1, diet2, diet3, diet4, diet5, diet6, pa1, pa2, pa3, str1, country1, imm1, imm2, ses1, education1, diabetes1, hDisease1, stroke1, htension1, noDisease1, immobile1, immobile2, depindex, lhin, prov, eventtitle, eventdate, calc_le, calc_beddays, household_income, home_ownership, marital_status, cancer, dementia, calc_fhc, calc_str)
 							 VALUES ('$uniqueID', '$sessionID', '" . mysql_real_escape_string ($age_s) . "', '$sex_s', '" . mysql_real_escape_string ($height1) . "', '$height2', 	
 							 '$height3', '" . mysql_real_escape_string ($weight1) . "', '" . mysql_real_escape_string ($weight2) .  "', 
-							 '$smk1', '" . mysql_real_escape_string ($smk2) . "', '$alc1', '" . mysql_real_escape_string ($alc2) . "', '$alc4', '" . mysql_real_escape_string ($diet1) . "', '" . mysql_real_escape_string ($diet2) . "', '" . mysql_real_escape_string ($diet3) . "', '" . mysql_real_escape_string ($diet4) . "', '" . mysql_real_escape_string ($diet5) . "', '" . mysql_real_escape_string ($diet6) . "', '" . mysql_real_escape_string ($pa1) . "', '" . mysql_real_escape_string ($pa2) . "', '" . mysql_real_escape_string ($pa3) . "', '$str1', '$country1', '$imm1', '" . mysql_real_escape_string ($imm2) . "', '$ses1', '$education1', '$diabetes1', '$hDisease1', '$stroke1', '$htension1', '$noDisease1', '$immobile1', '$immobile2', '$depindex', '$lhin', '$prov', '" . mysql_real_escape_string ($eventtitle) . "', '" . mysql_real_escape_string ($eventdate) . "', '$calc_le','$calc_beddays', '$household_income', '$home_ownership', '$marital_status', '$cancer_hc', '$dementia', '$calc_fhc')";
+							 '$smk1', '" . mysql_real_escape_string ($smk2) . "', '$alc1', '" . mysql_real_escape_string ($alc2) . "', '$alc4', '" . mysql_real_escape_string ($diet1) . "', '" . mysql_real_escape_string ($diet2) . "', '" . mysql_real_escape_string ($diet3) . "', '" . mysql_real_escape_string ($diet4) . "', '" . mysql_real_escape_string ($diet5) . "', '" . mysql_real_escape_string ($diet6) . "', '" . mysql_real_escape_string ($pa1) . "', '" . mysql_real_escape_string ($pa2) . "', '" . mysql_real_escape_string ($pa3) . "', '$str1', '$country1', '$imm1', '" . mysql_real_escape_string ($imm2) . "', '$ses1', '$education1', '$diabetes1', '$hDisease1', '$stroke1', '$htension1', '$noDisease1', '$immobile1', '$immobile2', '$depindex', '$lhin', '$prov', '" . mysql_real_escape_string ($eventtitle) . "', '" . mysql_real_escape_string ($eventdate) . "', '$calc_le','$calc_beddays', '$household_income', '$home_ownership', '$marital_status', '$cancer_hc', '$dementia', '$calc_fhc', '$calc_str')";
 	
 			$result4insert = mysql_query($query4insert) or die("Sorry unable to connect to db " . mysql_error());
 				if (!$result4insert) {

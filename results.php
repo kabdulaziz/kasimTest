@@ -565,18 +565,8 @@ else { // not a postback
 		<br>
 		<!-- Life Expectancy section -->
 		
-		
 		<?php echo '<html><div id="ResultHeader">My Results</div></html>' ?>
 		<div id="section1" class="sectionContainer" style="border: solid 1px #c0c0c0; margin-top: 0;">
-		
-		<!-- Kasim testing -->
-		<font color=red>
-			<h1><?php echo "FOR TESTING: prob alive: " . $_SESSION['probdeath']; ?></h1>
-			<h1><?php echo "FOR TESTING: baseline: " . $_SESSION['baselineTesting']; ?></h1>
-			<h1><?php echo "FOR TESTING: adjusted baseline: " . $_SESSION['adjbaselineTesting']; ?></h1>
-		</font>
-		<!-- end Kasim testing -->
-		
 		<h1><?php if (($_SESSION['le'])=='1') echo 'Life Expectancy '?><font class="emphase" size='6em'> <?php if(($_SESSION['le'])=='1') echo $_SESSION['leage']?> </font> <?php if (($_SESSION['le'])=='1') echo 'years' ?>
 		<span class="no-print"><?php if (($_SESSION['le'])=='1') echo '<img 
         type="image" class= "one" src="/common/images/info.png" 
@@ -725,24 +715,28 @@ else { // not a postback
 	
 	
 	<!-- Beginning of Form to show a detailed report -->
-	<?php echo '<html><div id="ResultHeader"> Disease Risks </div></html>' ?>
-	<div id="section1" class="sectionContainer" style="border: solid 1px #c0c0c0; margin-top: 0;">
+	<?php if(  $_SESSION['str']=='1' ) 	{ //start if stroke selected to show results for stroke / SPoRT ?>
 	
-	<?php
-	// prepare sport (stroke risk) for display -- convert to percentage and if < 0.5% just say <0.5%
-		$stroke_risk_pct = round($_SESSION['stroke_risk'] * 100,2);
-		if ($stroke_risk_pct < 0.5) $stroke_risk_pct2 = '< 0.5';
-		else $stroke_risk_pct2 = $stroke_risk_pct;
+		<?php echo '<html><div id="ResultHeader"> Disease Risks </div></html>' ?>
+		<div id="section1" class="sectionContainer" style="border: solid 1px #c0c0c0; margin-top: 0;">
 		
-	?>
-	
-	<div id="inner">5-year risk of stroke: <?php echo $stroke_risk_pct2 . "%"; ?></div>
-	<div id="inner">Vascular age: <?php echo $vascularAge; ?></div>
-	<div id="inner">FOR TESTING: 5-year risk of stroke: <?php echo $_SESSION['stroke_risk']; ?></div>
-	<div id="inner">FOR TESTING: SPoRT scale: <?php echo $_SESSION['stroke_score']; ?></div>
-	
+		<?php
+		// prepare sport (stroke risk) for display -- convert to percentage and if < 0.5% just say <0.5%
+			$stroke_risk_pct = round($_SESSION['stroke_risk'] * 100,2);
+			if ($stroke_risk_pct < 0.5) $stroke_risk_pct2 = '< 0.5';
+			else $stroke_risk_pct2 = $stroke_risk_pct;
+			
+		?>
+		
+		<h1>5-year risk of stroke is <font class="emphase" size='6em'> <?php echo $stroke_risk_pct2 . "%"; ?> </font> </h1>
+		<h1>Vascular age is <font class="emphase" size='6em'> <?php echo $vascularAge; ?> </font> years </h1>
+		<!--
+		<h1>FOR TESTING: 5-year risk of stroke: <?php echo $_SESSION['stroke_risk']; ?></h1>
+		<h1>FOR TESTING: SPoRT scale: <?php echo $_SESSION['stroke_score']; ?></h1>
+		-->
 	
 	</div> <!-- end sectionContainer -->
+	<?php } //end if stroke selected to show results for stroke ?>
 	
 	
 	<!-- Beginning of Form to show a detailed report -->
@@ -935,7 +929,7 @@ else { // not a postback
 	<!-- Recalculate and Privacy Button -->
 	<div class="no-print">
 		<br><br><font size='3em'><dfn>See how changes to your answers affect your results:</dfn></font><br><br>
-		<a href="/life/indexmport.php" onclick="setCounter(sessionID,'recalculate');" class="button orange"><b>RECALCULATE</b></a> 
+		<a href="/life" onclick="setCounter(sessionID,'recalculate');" class="button orange"><b>RECALCULATE</b></a> 
 		<!-- <a href="#" onclick="setCounter(sessionID,'print1');window.print();return false;" class="no-print button orange"><b>PRINT</b></a> -->
 		<br><br><br>
 		<center><h2><a href="/common/privacy.php"><b>PRIVACY</b></a> </h2></center>
